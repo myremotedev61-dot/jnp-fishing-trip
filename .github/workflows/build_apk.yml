@@ -31,12 +31,10 @@ jobs:
         working-directory: mobile_app
         run: |
           mkdir -p android/app
-          keytool -genkey -v -keystore android/fishingtrip-release.keystore \
-            -alias fishingtrip \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass fishingtrip2026 -keypass fishingtrip2026 \
-            -dname "CN=Fishing Trip Admin, OU=IT Mobile, O=Angler Squad Turatea, L=Jeneponto, ST=Sulawesi Selatan, C=ID"
-          cp android/fishingtrip-release.keystore fishingtrip-release.keystore
+          keytool -genkeypair -v -keystore android/fishingtrip-release.keystore \
+            -alias fishingtrip -keyalg RSA -keysize 2048 -validity 10000 \
+            -storetype PKCS12 -storepass fishingtrip2026 -keypass fishingtrip2026 \
+            -dname "CN=FishingTrip, OU=IT, O=AnglerSquad, L=Jeneponto, ST=Sulsel, C=ID" -noprompt
 
       - name: Install Dependencies
         working-directory: mobile_app
@@ -44,10 +42,11 @@ jobs:
 
       - name: Build Release APK
         working-directory: mobile_app
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release --verbose
 
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: FishingTrip-Release-APK
           path: mobile_app/build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
