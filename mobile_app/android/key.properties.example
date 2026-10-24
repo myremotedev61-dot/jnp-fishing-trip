@@ -1,0 +1,7 @@
+# Konfigurasi Signing Key Release Android untuk Fishing Trip
+# Simpan file keystore (.keystore / .jks) di folder aman di luar repository publik
+
+storePassword=fishingtrip2026
+keyPassword=fishingtrip2026
+keyAlias=fishingtrip
+storeFile=../fishingtrip-release.keystore

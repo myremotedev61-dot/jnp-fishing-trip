@@ -1,0 +1,51 @@
+name: Build Android Release APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Signed APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Generate Release Keystore
+        working-directory: mobile_app
+        run: |
+          keytool -genkey -v -keystore fishingtrip-release.keystore \
+            -alias fishingtrip \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass fishingtrip2026 -keypass fishingtrip2026 \
+            -dname "CN=Fishing Trip Admin, OU=IT Mobile, O=Angler Squad Turatea, L=Jeneponto, ST=Sulawesi Selatan, C=ID"
+
+      - name: Install Dependencies
+        working-directory: mobile_app
+        run: flutter pub get
+
+      - name: Build Release APK
+        working-directory: mobile_app
+        run: flutter build apk --release --split-per-abi
+
+      - name: Upload Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FishingTrip-Release-APK
+          path: mobile_app/build/app/outputs/flutter-apk/*.apk
