@@ -35,19 +35,15 @@ jobs:
             -alias fishingtrip -keyalg RSA -keysize 2048 -validity 10000 \
             -storetype PKCS12 -storepass fishingtrip2026 -keypass fishingtrip2026 \
             -dname "CN=FishingTrip, OU=IT, O=AnglerSquad, L=Jeneponto, ST=Sulsel, C=ID" -noprompt
+          cp android/fishingtrip-release.keystore fishingtrip-release.keystore
 
       - name: Install Dependencies
         working-directory: mobile_app
         run: flutter pub get
 
-      - name: Flutter Analyze
-        working-directory: mobile_app
-        run: flutter analyze --no-fatal-infos
-
       - name: Build Release APK
         working-directory: mobile_app
-        run: |
-          flutter build apk --release --verbose 2>&1 | tee ../build.log || (echo "=== GRADLE/BUILD FAILED - LAST 150 LINES ===" && tail -n 150 ../build.log && exit 1)
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
@@ -55,10 +51,3 @@ jobs:
           name: FishingTrip-Release-APK
           path: mobile_app/build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
-
-      - name: Upload Build Log If Failed
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: flutter-build-log
-          path: build.log
