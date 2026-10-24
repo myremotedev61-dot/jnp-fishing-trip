@@ -30,11 +30,13 @@ jobs:
       - name: Generate Release Keystore
         working-directory: mobile_app
         run: |
-          keytool -genkey -v -keystore fishingtrip-release.keystore \
+          mkdir -p android/app
+          keytool -genkey -v -keystore android/fishingtrip-release.keystore \
             -alias fishingtrip \
             -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass fishingtrip2026 -keypass fishingtrip2026 \
             -dname "CN=Fishing Trip Admin, OU=IT Mobile, O=Angler Squad Turatea, L=Jeneponto, ST=Sulawesi Selatan, C=ID"
+          cp android/fishingtrip-release.keystore fishingtrip-release.keystore
 
       - name: Install Dependencies
         working-directory: mobile_app
